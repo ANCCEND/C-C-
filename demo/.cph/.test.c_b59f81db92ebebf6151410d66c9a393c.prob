@@ -1,0 +1,1 @@
+{"name":"Local: test","url":"d:\\VSCode\\C\\demo\\test.c","tests":[{"id":1734608245812,"input":"2 -1 + 3 * 1 -","output":"9"},{"id":1734761832772,"input":"4 -134567 5 / +","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\VSCode\\C\\demo\\test.c","group":"local","local":true}

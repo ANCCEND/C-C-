@@ -1,0 +1,1 @@
+{"name":"Local: 链表-字符串操作","url":"d:\\VSCode\\C\\demo\\链表-字符串操作.c","tests":[{"id":1734003218004,"input":"qwertyuiopasdfghjkl\ni","output":"q w e r t y u i o p a s d f g h j k l\nqwertyuiopasdfghjkl\nqwertyuopasdfghjkl"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"d:\\VSCode\\C\\demo\\链表-字符串操作.c","group":"local","local":true}
