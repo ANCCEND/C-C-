@@ -323,7 +323,7 @@ status ListTraverse(LinkList L)
     else
     {
         LinkList M = L->next;
-        cout<<"表内容：";
+        cout << "表内容：";
         while (M != NULL)
         {
             printf("%d ", M->data);
@@ -514,7 +514,15 @@ status AddList(LISTS &Lists, char ListName[], LinkList L)
             }
         }
 
-        Lists.elem[length].L = L;
+        LinkList temp = (LinkList)malloc(sizeof(LNode));
+        Lists.elem[length].L = temp;
+        while (L != NULL)
+        {
+            temp->next = L->next;
+            temp = temp->next;
+            L = L->next;
+        }
+
         strcpy(Lists.elem[length].ListName, ListName);
         Lists.length++;
         return OK;

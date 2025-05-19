@@ -5,5 +5,5 @@
         "iostream": "cpp",
         "string": "cpp"
     },
-    "github.copilot.editor.enableAutoCompletions": false
+    "github.copilot.editor.enableAutoCompletions": true
 }
