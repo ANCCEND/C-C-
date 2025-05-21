@@ -567,7 +567,22 @@ status LocateList(LISTS &Lists, char ListName[], LinkList &L)
         {
             if (strcmp(ListName, Lists.elem[i].ListName) == 0)
             {
-                L = Lists.elem[i].L;
+                LinkList temp1, temp2, temp3;
+                temp1 = Lists.elem[i].L;
+                temp2 = (LinkList)malloc(sizeof(LNode));
+                temp3 = temp2;
+                while (temp1 != NULL)
+                {
+                    temp2->data = temp1->data;
+                    if ((temp1 = temp1->next) != NULL)
+                    {
+                        temp2->next = (LinkList)malloc(sizeof(LNode));
+                        temp2 = temp2->next;
+                    }
+                    else
+                        temp2->next = NULL;
+                }
+                L = temp3;
                 return i + 1;
             }
         }

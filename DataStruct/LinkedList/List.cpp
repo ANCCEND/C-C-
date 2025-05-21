@@ -83,7 +83,7 @@ int main(void)
         printf("    	  0. Exit\n");
         printf("    tips:多链表中最多可容纳10个表\n");
         printf("-------------------------------------------------\n");
-        printf("    请选择你的操作[0~12]:");
+        printf("    请选择你的操作[0~20]:");
         scanf("%d", &op);
         switch (op)
         {
@@ -366,8 +366,6 @@ int main(void)
 
         case 20:
             printf("查找线性表并将其载入L，此操作将导致L中现有数据丢失，输入Y确定操作: ");
-            while (getchar() != '\n')
-                ;
             if (getchar() != 'Y')
                 break;
             printf("\n请输入要查找的表名：");

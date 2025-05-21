@@ -1,5 +1,9 @@
-#include "stdio.h"
-#include "stdlib.h"
+#include <stdio.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <iostream>
+#include <string>
 
 #define TRUE 1
 #define FALSE 0
@@ -8,6 +12,7 @@
 #define INFEASIBLE -1
 #define OVERFLOW -2
 #define MAX_NODES 100
+#define FOREST_NUM 20
 
 typedef int status;
 typedef int KeyType;
@@ -23,7 +28,16 @@ typedef struct BiTNode
     struct BiTNode *lchild, *rchild;
 } BiTNode, *BiTree;
 
-#include <string.h>
+typedef struct
+// 森林结构定义
+{
+    struct
+    {
+        BiTree T;
+        char TName[30];
+    } elem[FOREST_NUM];
+    int TNum = 0;
+} Forest;
 
 void visit(BiTree T)
 {
@@ -50,6 +64,9 @@ status CreateBiTree(BiTree &T, TElemType definition[])
 /*根据带空枝的二叉树先根遍历序列definition构造一棵二叉树，将根节点指针赋值给T并返回OK，
 如果有相同的关键字，返回ERROR。此题允许通过增加其它函数辅助实现本关任务*/
 {
+    if (T != NULL || T->data.key == -1)
+        return INFEASIBLE;
+
     int flag = 0, prelength = 0, currlength = 0;
     while (definition[prelength].key != -1)
         prelength++;
@@ -62,7 +79,7 @@ status CreateBiTree(BiTree &T, TElemType definition[])
         {
             if (definition[i].key != 0 && redefine[j].key == definition[i].key)
             {
-                return INFEASIBLE;
+                return ERROR;
             }
         }
         if (isSame == 0)
@@ -86,18 +103,37 @@ void ClearTree(BiTree t)
 }
 
 status ClearBiTree(BiTree &T)
-// 将二叉树设置成空，并删除所有结点，释放结点空间
+// 将二叉树设置成空，留下空的头节点
+{
+    ClearTree(T);
+    T = (BiTree)malloc(sizeof(BiTNode));
+    T->data.key = -1;
+    T->data.others[0] = 0;
+    T->lchild = T->rchild = NULL;
+    return OK;
+}
+
+status DestroyBiTree(BiTree &T)
+// 将二叉树所有结点清除
 {
     ClearTree(T);
     T = NULL;
     return OK;
 }
 
+status isEmptyTree(BiTree T)
+{
+    if (T == NULL || T->data.key == -1)
+        return OK;
+    else
+        return INFEASIBLE;
+}
+
 int BiTreeDepth(BiTree T)
 // 求二叉树T的深度
 {
     if (T == NULL)
-        return 0;
+        return INFEASIBLE;
     int ldepth = BiTreeDepth(T->lchild);
     int rdepth = BiTreeDepth(T->rchild);
 
@@ -107,8 +143,12 @@ int BiTreeDepth(BiTree T)
 BiTNode *LocateNode(BiTree T, KeyType e)
 // 查找结点
 {
+    using namespace std;
     if (T == NULL)
+    {
+        cout << "二叉树为空！";
         return ERROR;
+    }
 
     int top = -1;
     BiTree stack[MAX_NODES];
@@ -170,7 +210,9 @@ status Assign(BiTree &T, KeyType e, TElemType value)
             else
             {
                 if (isSame)
-                    return INFEASIBLE;
+                {
+                    return -2;
+                }
                 else
                 {
                     p->data = value;
@@ -240,7 +282,7 @@ status InsertNode(BiTree &T, KeyType e, int LR, TElemType c)
     {
         BiTree p = stack[top--];
         if (p->data.key == c.key)
-            return ERROR;
+            return -2;
 
         if (p->rchild)
             stack[++top] = p->rchild;
@@ -392,7 +434,7 @@ status DeleteNode(BiTree &T, KeyType e)
     return ERROR;
 }
 
-status PreOrderTraverse(BiTree T, void (*visit)(BiTree))
+status PreOrderTraverse(BiTree T)
 // 先序遍历二叉树T
 {
     if (T == NULL)
@@ -461,6 +503,8 @@ status PostOrderTraverse(BiTree T, void (*visit)(BiTree))
 status LevelOrderTraverse(BiTree T, void (*visit)(BiTree))
 // 按层遍历二叉树T
 {
+    if (T == NULL)
+        return INFEASIBLE;
     BiTree quene[MAX_NODES];
     int front = 0, rear = 0;
     quene[rear++] = T;
@@ -532,13 +576,15 @@ status LoadBiTree(BiTree &T, char FileName[])
         return INFEASIBLE;
 
     FILE *fp = fopen(FileName, "r");
+    if (fp == NULL)
+        return ERROR;
     T = ReadFromFile(fp);
 }
 
 status MaxPathSum(BiTree T)
 {
     if (T == NULL)
-        return 0;
+        return INFEASIBLE;
 
     // 如果是叶子节点，直接返回自己的值
     if (T->lchild == NULL && T->rchild == NULL)
@@ -574,7 +620,7 @@ BiTree LowestCommonAncestor(BiTree T, KeyType e1, KeyType e2)
     return left != NULL ? left : right;
 }
 
-status InvertTree(BiTree T)
+status InvertTree(BiTree &T)
 {
     if (T == NULL)
         return INFEASIBLE;
@@ -585,4 +631,76 @@ status InvertTree(BiTree T)
     InvertTree(T->lchild);
     InvertTree(T->rchild);
     return OK;
+}
+
+BiTree CopyTree(BiTree T)
+{
+    if (T == NULL)
+        return NULL;
+
+    BiTree newnode = (BiTree)malloc(sizeof(BiTNode));
+    newnode->data = T->data;
+    newnode->lchild = CopyTree(T->lchild);
+    newnode->rchild = CopyTree(T->rchild);
+    return newnode;
+}
+
+status AddTree(BiTree T, Forest &Trees, char TreeName[])
+{
+    if (T == NULL)
+        return INFEASIBLE;
+    if (Trees.TNum == FOREST_NUM)
+        return ERROR;
+    Trees.elem[Trees.TNum++].T = CopyTree(T);
+    strcpy(Trees.elem[Trees.TNum - 1].TName, TreeName);
+    return OK;
+}
+
+status DeleteTree(Forest &Trees, char TreeName[])
+{
+    int TNum = Trees.TNum;
+    if (TNum == 0)
+        return INFEASIBLE;
+    for (int i = 0; i < TNum; i++)
+    {
+        if (strcmp(TreeName, Trees.elem[i].TName) == 0)
+        {
+            DestroyBiTree(Trees.elem[i].T);
+            for (int j = i; j < TNum - 1; j++)
+            {
+                Trees.elem[j] = Trees.elem[j + 1];
+            }
+            Trees.TNum--;
+            return OK;
+        }
+    }
+    return ERROR;
+}
+
+status GetBiTree(BiTree &T, Forest Trees, char TreeName[])
+{
+    using namespace std;
+    int TNum = Trees.TNum;
+    if (TNum == 0)
+        return INFEASIBLE;
+    for (int i = 0; i < TNum; i++)
+    {
+        if (strcmp(TreeName, Trees.elem[i].TName) == 0)
+        {
+            T = CopyTree(Trees.elem[i].T);
+            cout << "读取成功！它在森林中的序号为" << (i + 1) << endl;
+            return OK;
+        }
+    }
+    return ERROR;
+}
+
+void DestroyAll(Forest Trees)
+{
+    int TNum = Trees.TNum;
+    for (int i = 0; i < TNum; i++)
+    {
+        DestroyBiTree(Trees.elem[i].T);
+    }
+    Trees.TNum = 0;
 }
