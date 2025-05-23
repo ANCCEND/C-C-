@@ -62,7 +62,7 @@ BiTree ReadFromFile(FILE *fp);
 status LoadBiTree(BiTree &T, char FileName[]);
 status MaxPathSum(BiTree T);
 BiTree LowestCommonAncestor(BiTree T, KeyType e1, KeyType e2);
-status InvertTree(BiTree T);
+status InvertTree(BiTree &T);
 BiTree CopyTree(BiTree T);
 status AddTree(BiTree T, Forest &Trees, char TreeName[]);
 status DeleteTree(Forest &Trees, char TreeName[]);
@@ -97,7 +97,7 @@ int main(void)
 		printf("          8. 获得兄弟结点       19. 文件读取二叉树\n");
 		printf("          9. 插入结点           20. 加入一个二叉树到森林\n");
 		printf("          10. 删除结点          21. 从森林移除一个二叉树\n");
-		printf("          11. 前序遍历          22. 从森林取得一个二叉树");
+		printf("          11. 前序遍历          22. 从森林取得一个二叉树\n");
 		printf("    	  0. Exit\n");
 		printf("    tips:森林中最多可容纳20个树\n");
 		printf("-------------------------------------------------\n");
@@ -107,18 +107,22 @@ int main(void)
 		{
 		case 1:
 			cout << "输入要创建的二叉树的前序遍历序列" << endl;
-			int i = 0;
+			i = 0;
 			TElemType definition[MAX_NODES];
+			// 1 a 2 b 0 null 0 null 3 c 4 d 0 null 0 null 5 e 0 null 0 null -1 null
+			// 1 a 2 b 0 null  0 null 3 c 4 d  0 null  0 null 3 e  0 null  0 null -1 null
+			// 1 a 2 b 0 null 0 null 3 c 4 d 0 null 0 null -1 null
+			
 			do
 			{
-				scanf("%d %s", &definition[i].key, definition[i].others);
+				cin >> definition[i].key >> definition[i].others;
 				i++;
-			} while (definition[i].key != -1);
+			} while (definition[i - 1].key != -1);
 			if ((flag = CreateBiTree(T, definition)) == INFEASIBLE)
 				cout << "创建失败，二叉树不为空！" << endl;
 			else if (flag == OK)
 				cout << "二叉树创建成功！" << endl;
-			else
+			else 
 				cout << "有重复的关键字！" << endl;
 			while (getchar() != '\n')
 				;
@@ -142,17 +146,19 @@ int main(void)
 			break;
 
 		case 4:
-			if (isEmptyTree(T) == OK)
+			if ((flag = isEmptyTree(T)) == OK)
 				cout << "二叉树为空！" << endl;
+			else if (flag == INFEASIBLE)
+				cout << "二叉树不为空！" << endl;
 			else
-				cout << "二叉树不为空" << endl;
+				cout << "二叉树为空但是有根结点！" << endl;
 			while (getchar() != '\n')
 				;
 			getchar();
 			break;
 
 		case 5:
-			if ((flag = BiTreeDepth(T)) == INFEASIBLE)
+			if ((flag = BiTreeDepth(T)) == ERROR)
 				cout << "二叉树为空！" << endl;
 			else
 				cout << "二叉树深度为" << flag << endl;
@@ -292,7 +298,7 @@ int main(void)
 			break;
 
 		case 16:
-			cout << "请输入要查找共同祖先的结点的关键字：";
+			cout << "请输入要查找共同祖先的两个结点的关键字：";
 			cin >> e1 >> e2;
 			BiTree temp1, temp2;
 			if ((temp1 = LocateNode(T, e1)) && (temp2 = LocateNode(T, e2)))
@@ -354,7 +360,7 @@ int main(void)
 					;
 				break;
 			}
-			if ((flag == LoadBiTree(T, FileName)) == INFEASIBLE)
+			if ((flag = LoadBiTree(T, FileName)) == INFEASIBLE)
 				cout << "树不为空！" << endl;
 			else if (flag == ERROR)
 				cout << "文件打开失败！" << endl;
@@ -378,7 +384,7 @@ int main(void)
 			if ((flag == AddTree(T, Trees, TreeName)) == INFEASIBLE)
 				cout << "树不存在！" << endl;
 			else if (flag == ERROR)
-				cout << "多二叉树已满！（" << FOREST_NUM << '）' << endl;
+				cout << "多二叉树已满！（" << FOREST_NUM << "）" << endl;
 			else
 				cout << "加入成功！" << endl;
 			while (getchar() != '\n')

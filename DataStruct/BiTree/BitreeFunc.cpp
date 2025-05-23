@@ -64,7 +64,7 @@ status CreateBiTree(BiTree &T, TElemType definition[])
 /*根据带空枝的二叉树先根遍历序列definition构造一棵二叉树，将根节点指针赋值给T并返回OK，
 如果有相同的关键字，返回ERROR。此题允许通过增加其它函数辅助实现本关任务*/
 {
-    if (T != NULL || T->data.key == -1)
+    if (T != NULL)
         return INFEASIBLE;
 
     int flag = 0, prelength = 0, currlength = 0;
@@ -74,7 +74,7 @@ status CreateBiTree(BiTree &T, TElemType definition[])
     TElemType redefine[prelength];
     for (int i = 0; i < prelength; i++)
     {
-        int isSame = 0;
+
         for (int j = 0; j < currlength; j++)
         {
             if (definition[i].key != 0 && redefine[j].key == definition[i].key)
@@ -82,12 +82,8 @@ status CreateBiTree(BiTree &T, TElemType definition[])
                 return ERROR;
             }
         }
-        if (isSame == 0)
-        {
-            redefine[currlength++] = definition[i];
-        }
-        else
-            continue;
+
+        redefine[currlength++] = definition[i];
     }
     T = CreateTree(redefine, flag);
     return OK;
@@ -123,8 +119,10 @@ status DestroyBiTree(BiTree &T)
 
 status isEmptyTree(BiTree T)
 {
-    if (T == NULL || T->data.key == -1)
+    if (T == NULL)
         return OK;
+    else if (T->data.key == -1)
+        return ERROR;
     else
         return INFEASIBLE;
 }
@@ -133,7 +131,7 @@ int BiTreeDepth(BiTree T)
 // 求二叉树T的深度
 {
     if (T == NULL)
-        return INFEASIBLE;
+        return ERROR;
     int ldepth = BiTreeDepth(T->lchild);
     int rdepth = BiTreeDepth(T->rchild);
 
@@ -264,16 +262,6 @@ status InsertNode(BiTree &T, KeyType e, int LR, TElemType c)
     if (T == NULL)
         return INFEASIBLE;
 
-    if (LR == -1)
-    {
-        BiTree temp = T;
-        T = (BiTree)malloc(sizeof(BiTNode));
-        T->data = c;
-        T->rchild = temp;
-        T->lchild = NULL;
-        return OK;
-    }
-
     BiTree stack[MAX_NODES];
     int top = -1;
     stack[++top] = T;
@@ -288,6 +276,15 @@ status InsertNode(BiTree &T, KeyType e, int LR, TElemType c)
             stack[++top] = p->rchild;
         if (p->lchild)
             stack[++top] = p->lchild;
+    }
+    if (LR == -1)
+    {
+        BiTree temp = T;
+        T = (BiTree)malloc(sizeof(BiTNode));
+        T->data = c;
+        T->rchild = temp;
+        T->lchild = NULL;
+        return OK;
     }
 
     stack[++top] = T;
@@ -306,7 +303,7 @@ status InsertNode(BiTree &T, KeyType e, int LR, TElemType c)
                 p->lchild->rchild = temp;
                 p->lchild->lchild = NULL;
             }
-            else
+            else if (LR == 1)
             {
                 BiTree temp = p->rchild;
                 p->rchild = (BiTree)malloc(sizeof(BiTNode));
@@ -314,6 +311,8 @@ status InsertNode(BiTree &T, KeyType e, int LR, TElemType c)
                 p->rchild->rchild = temp;
                 p->rchild->lchild = NULL;
             }
+            else
+                return ERROR;
             return OK;
         }
         if (p->rchild)
@@ -461,7 +460,7 @@ status PreOrderTraverse(BiTree T)
     return OK;
 }
 
-status InOrderTraverse(BiTree T, void (*visit)(BiTree))
+status InOrderTraverse(BiTree T)
 // 中序遍历二叉树T
 {
     if (T == NULL)
@@ -488,19 +487,19 @@ status InOrderTraverse(BiTree T, void (*visit)(BiTree))
     return OK;
 }
 
-status PostOrderTraverse(BiTree T, void (*visit)(BiTree))
+status PostOrderTraverse(BiTree T)
 // 后序遍历二叉树T
 {
     if (T == NULL)
         return INFEASIBLE;
 
-    PostOrderTraverse(T->lchild, visit);
-    PostOrderTraverse(T->rchild, visit);
+    PostOrderTraverse(T->lchild);
+    PostOrderTraverse(T->rchild);
     visit(T);
     return OK;
 }
 
-status LevelOrderTraverse(BiTree T, void (*visit)(BiTree))
+status LevelOrderTraverse(BiTree T)
 // 按层遍历二叉树T
 {
     if (T == NULL)
@@ -579,6 +578,7 @@ status LoadBiTree(BiTree &T, char FileName[])
     if (fp == NULL)
         return ERROR;
     T = ReadFromFile(fp);
+    return OK;
 }
 
 status MaxPathSum(BiTree T)
