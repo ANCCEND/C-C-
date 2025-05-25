@@ -112,7 +112,7 @@ int main(void)
 			// 1 a 2 b 0 null 0 null 3 c 4 d 0 null 0 null 5 e 0 null 0 null -1 null
 			// 1 a 2 b 0 null  0 null 3 c 4 d  0 null  0 null 3 e  0 null  0 null -1 null
 			// 1 a 2 b 0 null 0 null 3 c 4 d 0 null 0 null -1 null
-			
+
 			do
 			{
 				cin >> definition[i].key >> definition[i].others;
@@ -122,7 +122,7 @@ int main(void)
 				cout << "创建失败，二叉树不为空！" << endl;
 			else if (flag == OK)
 				cout << "二叉树创建成功！" << endl;
-			else 
+			else
 				cout << "有重复的关键字！" << endl;
 			while (getchar() != '\n')
 				;
@@ -436,6 +436,7 @@ int main(void)
 		}
 	}
 	printf("欢迎下次再使用本系统！\n");
+	DestroyBiTree(T);
 	DestroyAll(Trees);
 	return 0;
 }
