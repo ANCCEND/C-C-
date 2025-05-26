@@ -807,7 +807,7 @@ status AddGraph(Gs &Graphs, ALGraph G, char GraphName[])
 
 status GetGraph(Gs Graphs, ALGraph &G, char GraphName[])
 {
-    if (G.vexnum != 0)
+    if (Graphs.GNum == 0)
         return INFEASIBLE;
     for (int i = 0; i < Graphs.GNum; i++)
     {

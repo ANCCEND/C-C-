@@ -431,10 +431,12 @@ int main(void)
             break;
 
         case 20:
-            cout << "请输入要取得的图的名称（小于30字符）：";
+            cout << "请输入要取得的图的名称（小于30字符，此操作会导致现有图丢失，输入N取消）：";
             cin >> GraphName;
+            if (GraphName[0] == 'N' && GraphName[1] == 0)
+                break;
             if ((flag = GetGraph(Graphs, G, GraphName)) == INFEASIBLE)
-                cout << "现有图不为空！";
+                cout << "图集为空！";
             else if (flag == ERROR)
                 cout << "未找到目标图！";
             else

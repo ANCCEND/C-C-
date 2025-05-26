@@ -500,33 +500,44 @@ status AddList(LISTS &Lists, char ListName[], LinkList L)
 {
     if (L == NULL)
         return INFEASIBLE;
-    else
+
+    if (Lists.length == 10)
+        return ERROR;
+
+    for (int i = 0; i < Lists.length; i++)
     {
-        if (Lists.length == 10)
-            return ERROR;
-
-        int length = Lists.length;
-        for (int i = 0; i < length; i++)
-        {
-            if (strcmp(Lists.elem[i].ListName, ListName) == 0)
-            {
-                return -3;
-            }
-        }
-
-        LinkList temp = (LinkList)malloc(sizeof(LNode));
-        Lists.elem[length].L = temp;
-        while (L != NULL)
-        {
-            temp->next = L->next;
-            temp = temp->next;
-            L = L->next;
-        }
-
-        strcpy(Lists.elem[length].ListName, ListName);
-        Lists.length++;
-        return OK;
+        if (strcmp(Lists.elem[i].ListName, ListName) == 0)
+            return -3;
     }
+
+    LinkList src = L;
+    LinkList newHead = (LinkList)malloc(sizeof(LNode));
+    if (!newHead)
+        return ERROR;
+
+    LinkList dest = newHead;
+    Lists.elem[Lists.length].L = newHead;
+
+    while (src != NULL)
+    {
+        dest->data = src->data;
+        if (src->next != NULL)
+        {
+            dest->next = (LinkList)malloc(sizeof(LNode));
+            if (!dest->next)
+                return ERROR;
+            dest = dest->next;
+        }
+        else
+        {
+            dest->next = NULL;
+        }
+        src = src->next;
+    }
+
+    strcpy(Lists.elem[Lists.length].ListName, ListName);
+    Lists.length++;
+    return OK;
 }
 
 status RemoveList(LISTS &Lists, char ListName[])

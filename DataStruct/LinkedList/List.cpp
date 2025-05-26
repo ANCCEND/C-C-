@@ -93,7 +93,8 @@ int main(void)
                 printf("链表创建成功！\n");
             else
                 printf("链表创建失败！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -102,7 +103,8 @@ int main(void)
                 printf("链表销毁成功！\n");
             else
                 printf("链表销毁失败！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -111,7 +113,8 @@ int main(void)
                 printf("已删除链表中所有元素！\n");
             else
                 printf("操作失败！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -120,7 +123,8 @@ int main(void)
                 printf("链表为空！\n");
             else
                 printf("链表不为空！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -129,16 +133,14 @@ int main(void)
                 printf("链表长度为：%d\n", length);
             else
                 printf("链表不存在！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 6:
             printf("请输入要查找的元素位置序号：");
             scanf("%d", &i);
-            while (getchar() != '\n')
-                ;
-            printf("\n");
 
             if ((flag = GetElem(L, i, e)) == OK)
                 printf("第%d个元素为：%d\n", i, e);
@@ -146,23 +148,22 @@ int main(void)
                 printf("查找位置不合法！\n");
             else
                 printf("链表不存在！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 7:
             printf("请输入要查找的元素：");
             scanf("%d", &e);
-            while (getchar() != '\n')
-                ;
-            printf("\n");
             if ((location = LocateElem(L, e)) > 0)
                 printf("它在链表L的位置序号为：%d\n", location);
             else if (location == 0)
                 printf("它不在表中！\n");
             else
                 printf("链表不存在!\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -170,9 +171,6 @@ int main(void)
             int pre;
             printf("请输入要查找前驱的元素：");
             scanf("%d", &e);
-            while (getchar() != '\n')
-                ;
-            printf("\n");
 
             if ((flag = PriorElem(L, e, pre)) == OK)
                 printf("该元素的前驱为：%d\n", pre);
@@ -181,7 +179,8 @@ int main(void)
             else
                 printf("链表不存在！\n");
 
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -189,8 +188,6 @@ int main(void)
             int next;
             printf("请输入要查找后继的元素：");
             scanf("%d", &e);
-            while (getchar() != '\n')
-                ;
 
             if ((flag = NextElem(L, e, next)) == OK)
                 printf("该元素的后继为：%d\n", next);
@@ -199,7 +196,8 @@ int main(void)
             else
                 printf("链表不存在！\n");
 
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -212,9 +210,6 @@ int main(void)
                     break;
                 printf("请输入要插入的元素值：");
                 scanf("%d", &e);
-                while (getchar() != '\n')
-                    ;
-
                 if ((flag = ListInsert(L, i, e)) == OK)
                     printf("插入成功！\n");
                 else if (flag == ERROR)
@@ -223,16 +218,14 @@ int main(void)
                     printf("链表不存在！\n");
             } while (1);
 
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 11:
             printf("请输入要删除的元素位置：");
             scanf("%d", &i);
-            while (getchar() != '\n')
-                ;
-            printf("\n");
 
             if ((flag = ListDelete(L, i, e)) == OK)
                 printf("成功删除第%d个元素%d\n", i, e);
@@ -241,14 +234,16 @@ int main(void)
             else
                 printf("链表不存在！\n");
 
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 12:
             if (ListTraverse(L) == INFEASIBLE)
                 printf("链表是空表！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -257,7 +252,8 @@ int main(void)
                 printf("反转成功！\n");
             else
                 printf("链表为空！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -270,15 +266,14 @@ int main(void)
                 getchar();
                 break;
             }
-            while (getchar() != '\n')
-                ;
             if ((flag = RemoveNthFromEnd(L, n)) == INFEASIBLE)
                 cout << "表不存在！" << endl;
             else if (flag == ERROR)
                 cout << "表长不足" << n << endl;
             else
                 cout << "删除成功！" << endl;
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -287,16 +282,14 @@ int main(void)
                 printf("排序成功！\n");
             else
                 printf("链表不存在！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 16:
             printf("请输入要保存的文件名：");
             scanf("%s", Filename);
-            while (getchar() != '\n')
-                ;
-            printf("\n");
 
             if ((flag = SaveList(L, Filename)) == OK)
                 printf("文件保存成功！\n");
@@ -304,16 +297,14 @@ int main(void)
                 printf("写入保存失败：链表不存在！\n");
             else
                 cout << "文件打开失败！" << endl;
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 17:
             printf("请输入要读取的文件名：");
             scanf("%s", Filename);
-            while (getchar() != '\n')
-                ;
-            printf("\n");
 
             if ((flag = LoadList(L, Filename)) == OK)
                 printf("文件读取成功！\n");
@@ -321,7 +312,8 @@ int main(void)
                 printf("读取失败：链表已存在！\n");
             else
                 cout << "文件打开失败！" << endl;
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
@@ -332,9 +324,6 @@ int main(void)
                 cout << "未输入表名！" << endl;
                 break;
             }
-            while (getchar() != '\n')
-                ;
-            printf("\n");
 
             if ((flag = AddList(Lists, Listname, L)) == OK)
                 printf("加入表成功！\n");
@@ -344,35 +333,30 @@ int main(void)
                 cout << "名称已被使用!" << endl;
             else
                 printf("要加入的线性表不存在！\n");
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 19:
             printf("请输入要删除的表名：");
             scanf("%s", Listname);
-            while (getchar() != '\n')
-                ;
-
             if ((flag = RemoveList(Lists, Listname)) == OK)
                 printf("删除链表%s成功！\n", Listname);
             else if (flag == ERROR)
                 printf("删除失败，找不到链表%s\n", Listname);
             else
                 cout << "多链表为空！" << endl;
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
         case 20:
-            printf("查找线性表并将其载入L，此操作将导致L中现有数据丢失，输入Y确定操作: ");
-            if (getchar() != 'Y')
-                break;
-            printf("\n请输入要查找的表名：");
+            printf("\n请输入要查找的表名（此操作将会导致现有表数据丢失！输入N取消）：");
             scanf("%s", Listname);
-            while (getchar() != '\n')
-                ;
-            printf("\n");
+            if (Listname[0] == 'N' && Listname[1] == 0)
+                break;
 
             if ((location = LocateList(Lists, Listname, L)) == ERROR)
                 printf("查找失败，表%s不在多链表中！\n", Listname);
@@ -380,7 +364,8 @@ int main(void)
                 cout << "多链表表为空！" << endl;
             else
                 printf("表%s的位置序号为:%d\n", Listname, location);
-            getchar();
+            while (getchar() != '\n')
+                ;
             getchar();
             break;
 
