@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include <queue>
 
 #define TRUE 1
 #define FALSE 0
@@ -31,7 +32,7 @@ typedef struct
 
 typedef struct ArcNode
 {                            // 表结点类型定义
-    int adjvex;              // 顶点位置编号
+    int adjvex = -3;         // 顶点位置编号
     struct ArcNode *nextarc; // 下一个表结点指针
 } ArcNode;
 typedef struct VNode
@@ -58,7 +59,7 @@ typedef struct
 
 void visit(VertexType v)
 {
-    printf(" %d %s", v.key, v.others);
+    printf(" %d,%s ", v.key, v.others);
 }
 
 status DestroyGraph(ALGraph &G)
@@ -101,7 +102,7 @@ status CreateGraph(ALGraph &G, VertexType V[], KeyType VR[][2])
     // 插入顶点
     for (int i = 0; V[i].key != -1; ++i)
     {
-        if (LocateVertex(G, V[i].key) != -1 || i > 20)
+        if (LocateVertex(G, V[i].key) != -1 || i >= 20)
         {
             G.vexnum = 0;
             return ERROR; // 重复 key
@@ -145,11 +146,13 @@ status PutVex(ALGraph &G, KeyType u, VertexType value)
 // 根据u在图G中查找顶点，查找成功将该顶点值修改成value，返回OK；
 // 如果查找失败或关键字不唯一，返回ERROR
 {
+    if (G.vexnum == 0)
+        return INFEASIBLE;
     int location = -1, count = 0, i;
     for (i = 0; i < G.vexnum; i++)
     {
         if (value.key == G.vertices[i].data.key && u != G.vertices[i].data.key)
-            return ERROR;
+            return -2;
         if (u == G.vertices[i].data.key)
             location = i;
     }
@@ -160,19 +163,23 @@ status PutVex(ALGraph &G, KeyType u, VertexType value)
 }
 
 status FirstAdjVex(ALGraph G, KeyType u)
-// 根据u在图G中查找顶点，查找成功返回顶点u的第一邻接顶点位序，否则返回-1；
+// 根据u在图G中查找顶点，查找成功返回顶点u的第一邻接顶点位序，否则返回ERROR；
 {
+    if (G.vexnum == 0)
+        return INFEASIBLE;
     for (int i = 0; i < G.vexnum; i++)
     {
         if (G.vertices[i].data.key == u)
-            return G.vertices[i].firstarc->adjvex;
+            return G.vertices[i].firstarc->adjvex + 1;
     }
-    return INFEASIBLE;
+    return ERROR;
 }
 
 status NextAdjVex(ALGraph G, KeyType v, KeyType w)
 // v对应G的一个顶点,w对应v的邻接顶点；操作结果是返回v的（相对于w）下一个邻接顶点的位序；如果w是最后一个邻接顶点，或v、w对应顶点不存在，则返回-1。
 {
+    if (G.vexnum == 0)
+        return INFEASIBLE;
     for (int i = 0; i < G.vexnum; i++)
     {
         if (G.vertices[i].data.key == v)
@@ -183,32 +190,33 @@ status NextAdjVex(ALGraph G, KeyType v, KeyType w)
                 temp = temp->nextarc;
             }
             if (temp == NULL || temp->nextarc == NULL)
-                return INFEASIBLE;
+                return -2;
             else
-                return temp->nextarc->adjvex;
+                return temp->nextarc->adjvex + 1;
         }
     }
-    return INFEASIBLE;
+    return ERROR;
 }
 
-status InsertVex(ALGraph &G, VertexType v)
+status InsertVex(ALGraph &G, VertexType value)
 // 在图G中插入顶点v，成功返回OK,否则返回ERROR
 {
     if (G.vexnum == MAX_VERTEX_NUM)
-        return ERROR;
+        return INFEASIBLE;
     for (int i = 0; i < G.vexnum; i++)
     {
-        if (G.vertices[i].data.key == v.key)
+        if (G.vertices[i].data.key == value.key)
             return ERROR;
     }
-    G.vertices[G.vexnum++].data = v;
+    G.vertices[G.vexnum++].data = value;
+    G.vertices[G.vexnum - 1].firstarc = NULL;
     return OK;
 }
 
 status DeleteVex(ALGraph &G, KeyType v)
 {
     if (G.vexnum == 1)
-        return ERROR;
+        return INFEASIBLE;
 
     int index = -1, count = 0;
     for (int i = 0; i < G.vexnum; i++)
@@ -281,7 +289,8 @@ status DeleteVex(ALGraph &G, KeyType v)
 status InsertArc(ALGraph &G, KeyType v, KeyType w)
 // 在图G中增加弧<v,w>，成功返回OK,否则返回ERROR
 {
-
+    if (G.vexnum == 0)
+        return INFEASIBLE;
     int v1 = LocateVertex(G, v);
     int v2 = LocateVertex(G, w);
 
@@ -292,7 +301,7 @@ status InsertArc(ALGraph &G, KeyType v, KeyType w)
     while (check)
     {
         if (check->adjvex == v2)
-            return ERROR; // 边已存在
+            return -2; // 弧已存在
         check = check->nextarc;
     }
 
@@ -316,6 +325,8 @@ status InsertArc(ALGraph &G, KeyType v, KeyType w)
 status DeleteArc(ALGraph &G, KeyType v, KeyType w)
 // 在图G中删除弧<v,w>，成功返回OK,否则返回ERROR
 {
+    if (G.vexnum == 0)
+        return INFEASIBLE;
     int v1 = LocateVertex(G, v);
     int v2 = LocateVertex(G, w);
 
@@ -349,7 +360,7 @@ status DeleteArc(ALGraph &G, KeyType v, KeyType w)
     }
 
     if (isDeleted == 0)
-        return ERROR;
+        return -2;
 
     temp = G.vertices[v2].firstarc, prev = NULL;
     isDeleted = 0;
@@ -376,37 +387,43 @@ status DeleteArc(ALGraph &G, KeyType v, KeyType w)
     }
 
     if (isDeleted == 0)
-        return ERROR;
+        return -2;
 
     G.arcnum--;
     return OK;
 }
 
-void DFS(ALGraph &G, int v, bool visited[])
+void DFS(ALGraph &G, int v, bool visited[], int flag)
 {
-    visit(G.vertices[v].data);
+    if (flag == 1)
+        visit(G.vertices[v].data);
     visited[v] = true;
 
     for (ArcNode *p = G.vertices[v].firstarc; p != NULL; p = p->nextarc)
     {
         int w = p->adjvex;
         if (!visited[w])
-            DFS(G, w, visited);
+            DFS(G, w, visited, flag);
     }
 }
 
 status DFSTraverse(ALGraph &G)
 // 对图G进行深度优先搜索遍历，依次对图中的每一个顶点使用函数visit访问一次，且仅访问一次
 {
+    using namespace std;
     if (G.vexnum == 0)
+    {
+        cout << "图为空！";
         return INFEASIBLE;
+    }
 
     bool visited[MAX_VERTEX_NUM] = {false}; // 初始化所有顶点未访问
 
+    cout << "深度优先搜索遍历结果为：" << endl;
     for (int i = 0; i < G.vexnum; i++)
     {
         if (!visited[i])
-            DFS(G, i, visited);
+            DFS(G, i, visited, 1);
     }
 
     return OK;
@@ -415,9 +432,14 @@ status DFSTraverse(ALGraph &G)
 status BFSTraverse(ALGraph &G)
 // 对图G进行广度优先搜索遍历，依次对图中的每一个顶点使用函数visit访问一次，且仅访问一次
 {
+    using namespace std;
     if (G.vexnum == 0)
+    {
+        cout << "图为空！";
         return INFEASIBLE;
+    }
 
+    cout << "广度优先搜索遍历结果为：" << endl;
     bool visited[MAX_VERTEX_NUM] = {false};
     int quene[MAX_VERTEX_NUM + 1];
     int front = 0, rear = 0;
@@ -602,20 +624,39 @@ status LoadGraph(ALGraph &G, char FileName[])
     return OK;
 }
 
-void kDFS(ALGraph G, int v, bool target[], int k)
+void kBFS(ALGraph G, int start, bool target[], int k)
 {
-    if (k <= 0)
-        return;
-    visit(G.vertices[v].data);
-    target[v] = true;
-    ArcNode *arc = G.vertices[v].firstarc;
-    while (arc)
+    using namespace std;
+    queue<pair<int, int>> q; // pair<顶点下标, 当前层数>
+    bool visited[MAX_VERTEX_NUM] = {false};
+
+    q.push({start, 0});
+    visited[start] = true;
+
+    while (!q.empty())
     {
-        if (target[arc->adjvex] == false)
+        auto [u, depth] = q.front();
+        q.pop();
+
+        // 跳过自己
+        if (depth > 0 && depth < k)
         {
-            kDFS(G, arc->adjvex, target, k - 1);
+            visit(G.vertices[u].data); // 打印或处理该顶点
+            target[u] = true;
         }
-        arc = arc->nextarc;
+
+        if (depth >= k - 1)
+            continue;
+
+        for (ArcNode *p = G.vertices[u].firstarc; p; p = p->nextarc)
+        {
+            int v = p->adjvex;
+            if (!visited[v])
+            {
+                visited[v] = true;
+                q.push({v, depth + 1});
+            }
+        }
     }
 }
 
@@ -629,7 +670,9 @@ status VerticesSetLessThanK(ALGraph G, KeyType v, int k)
     {
         if (G.vertices[i].data.key == v)
         {
-            kDFS(G, i, target, k);
+            using namespace std;
+            cout << "与顶点v距离小于k的顶点：" << endl;
+            kBFS(G, i, target, k + 1);
             return OK;
         }
     }
@@ -701,7 +744,7 @@ status ConnectedComponentsNums(ALGraph G)
     {
         if (!visited[i])
         {
-            DFS(G, i, visited);
+            DFS(G, i, visited, 0);
             count++;
         }
     }

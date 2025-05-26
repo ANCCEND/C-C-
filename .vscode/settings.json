@@ -40,5 +40,6 @@
         "streambuf": "cpp",
         "typeinfo": "cpp"
     },
-    "github.copilot.editor.enableAutoCompletions": true
+    "github.copilot.editor.enableAutoCompletions": true,
+    "C_Cpp.default.compilerPath": "C:/mingw64/bin/g++.exe"
 }
