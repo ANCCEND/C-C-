@@ -94,7 +94,7 @@ int LocateVertex(ALGraph &G, KeyType key)
 status CreateGraph(ALGraph &G, VertexType V[], KeyType VR[][2])
 {
     if (V[0].key == -1)
-        return ERROR;
+        return INFEASIBLE;
 
     G.vexnum = G.arcnum = 0;
     G.kind = UDG;
